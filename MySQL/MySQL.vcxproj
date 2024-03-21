@@ -129,7 +129,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\Prakhar_O\Downloads\mysql-8.3.0-winx64\lib64\vs14;%(AdditionalLibraryDirectories);C:\Program Files\MySQL\Connector C++ 1.1\lib\opt;C:\Program Files\MySQL\MySQL Server 8.0\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mysqlcppconn-static.lib;%(AdditionalDependencies);mysqlcppconn.lib;libmysql.lib</AdditionalDependencies>
+      <AdditionalDependencies>mysqlcppconn-static.lib;mysqlclient.lib;mysqlcppconn.lib;libmysql.lib;advapi32.lib;user32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
