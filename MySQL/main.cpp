@@ -34,16 +34,31 @@ void login() {
     sql::Connection* con;
     sql::Statement* stmt;
     sql::ResultSet* res;
+
+    // Connect to the database
     driver = sql::mysql::get_mysql_driver_instance();
     con = driver->connect("localhost", "root", "");
     con->setSchema("houserental");
 
-
+    // Execute a query to retrieve all data from the 'users' table
     stmt = con->createStatement();
-    res = stmt->executeQuery("SELECT * FROM users WHERE User_ID ='" + User_ID + "'AND Passkey = '" + Passkey + "'");
+    res = stmt->executeQuery("SELECT * FROM users WHERE User_ID='"+User_ID+"'");
+
+    // Iterate over the result set and print the data
     while (res->next()) {
-        cout << "h\n";
-        logCounter++;
+        //std::cout << "User ID: " << res->getString("User_ID") << std::endl;
+        //std::cout << "Name: " << res->getString("Name") << std::endl;
+        //std::cout << "Phone: " << res->getString("Phone") << std::endl;
+        //std::cout << "Email: " << res->getString("Email") << std::endl;
+        //std::cout << "Passkey: " << res->getString("Passkey") << std::endl;
+        //cout << "h\n";
+        //cout << Passkey << res->getString("Passkey") << endl;
+
+        if (res->getString("Passkey").compare(Passkey))
+        {
+            
+            logCounter++;
+        }
     }
     if (logCounter > 0) {
         std::cout << "Login successful!" << std::endl;
@@ -131,6 +146,7 @@ int main() {
         std::cout << "Name: " << res->getString("Name") << std::endl;
         std::cout << "Phone: " << res->getString("Phone") << std::endl;
         std::cout << "Email: " << res->getString("Email") << std::endl;
+        std::cout << "Passkey: " << res->getString("Passkey") << std::endl;
         // Add more columns as needed
     }
 
