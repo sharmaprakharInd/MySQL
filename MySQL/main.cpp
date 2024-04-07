@@ -13,6 +13,7 @@ int main() {
 
     // Connect to the database
     driver = sql::mysql::get_mysql_driver_instance();
+
     con = driver->connect("localhost", "root", ""); 
     con->setSchema("houserental");
 
