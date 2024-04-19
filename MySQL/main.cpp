@@ -13,7 +13,9 @@ class Users {
     //DataMembers
     string Name, Phone, Email, User_ID, Passkey;
 public:
-    Users(){}
+    Users(){
+        cout << "Null\n";
+    }
      void setData(string Na, string Ph, string Em, string UID, string PKey){
          Name = Na;
          Phone = Ph;
@@ -35,14 +37,14 @@ public:
 class Property {
     string Owner_ID;
     
-    int size;
-    int b;
-    int br;
-    double price;
+    int size=0;
+    int b=0;
+    int br=0;
+    double price=0.0;
     string lastrev;
-    char laundary, parking; //laundary -> Y,n; Parking -> S(street),G(Garage),N(none)
+    char laundry='\0', parking='\0'; //laundary -> Y,n; Parking -> S(street),G(Garage),N(none)
     string city, area, Zipcode;
-    int rented;
+    int rented=0;
 public:
     Property(){}
     void setData(string OID,int s, int brr, int brrr, double p, char l, char pr, string c, string a , string z  ) {
@@ -51,7 +53,7 @@ public:
         b = brr;
         br = brrr;
         price = p;
-        laundary = l;
+        laundry = l;
         parking = pr;
         city = c;
         area = a;
@@ -59,13 +61,82 @@ public:
     }
     string getData(char ch) {
         switch (ch) {
-       
+        case 'O':return Owner_ID;
+        case 's':return to_string(size);
+        case 'b':return to_string(b);
+        case 'B':return to_string(br);
+        case 'P':return to_string(price);
+        case 'l':return to_string(laundry);
+        case 'p':return to_string(parking);
+        case 'c':return city;
+        case 'a':return area;
+        case 'Z':return Zipcode;
+        case 'R':return lastrev;
         default:return "0";
         }
     }
 
 };
-void listProperty(){}
+void intotable(string table, Property& p) {
+    MYSQL* conn; conn = mysql_init(NULL);
+    if (!mysql_real_connect(conn, "localhost", "root", "", "houserental", 3306, NULL, 0)) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    else {
+        cout << "logged in Database" << endl;
+    }
+    string ins = "INSERT INTO properties (Owner_ID , Zipcode , b , br , size ,price ,laundary,parking ,city ,area ) VALUES (";
+    ins += "'" + p.getData('O') + "',";
+    ins += "'" + p.getData('Z') + "',";
+    ins += (p.getData('b')) + ",";
+    ins += (p.getData('B')) + ",";
+    ins += (p.getData('s')) + ",";
+    ins += (p.getData('P')) + ",";
+    ins += "'" + p.getData('l') + "',";
+    ins += "'" + p.getData('p') + "',";
+    ins += "'" + p.getData('c') + "',";
+    ins += "'" + p.getData('a') + "');";
+    if (mysql_query(conn, ins.c_str())) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    else {
+        cout << "Data Saved Successfully!" << endl;
+    }
+}
+void listProperty(Users& u) {
+    string Owner_ID;
+    int si;
+    int bed;
+    int bath;
+    double pr;
+    char laun, park; //laundry -> Y,n; Parking -> S(street),G(Garage),N(none)
+    string ci, ar, Zipc;
+    Owner_ID = u.getData('U');
+    cout << "welcome User \t " << Owner_ID << endl;
+    cout << "Enter the size of the property:\t";
+    cin >> si;
+    cout << "Enter the number of bedrooms:\t";
+    cin >> bed;
+    cout << "Enter the number of bathrooms;\t";
+    cin >> bath;
+    cout << "Enter the price:\t";
+    cin >> pr;
+    cout << "Is laundry service available(Y/N)";
+    cin >> laun;
+    cout << "Is Parking facility available S(street),G(Garage),N(none)";
+    cin >> park;
+    cout << "Enter The city:\t";
+    cin >> ci;
+    cout << "Enter The locality:\t";
+    //cin >> ar;
+    std::getline(std::cin, ar);
+    cout << "Enter The Zipcode:\t";
+    getline(cin, Zipc);
+    Property P;
+    P.setData(Owner_ID, si, bed, bath, pr, laun, park, ci, ar, Zipc);
+    intotable("property", P);
+
+}
 void searchProperty(){}
 void login() {
     string S_no, Name, Phone, Email, User_ID, Passkey;
@@ -121,7 +192,7 @@ void login() {
     cout << "Would you like to list property(Y/N):\t";
     cin >> choice;
     if (choice == 'Y' || choice == 'y') {
-        listProperty();
+        listProperty(usr);
     }
     else
         searchProperty();
@@ -131,22 +202,22 @@ void signup() {
     Users u;
     cout << "Welcome To Signup Page\n";
     cout << "Enter your name:\t";
-    getline(cin, Name);
+    cin >> Name;
 hel:  cout << "Enter your Phone:\t";
-    getline(cin, Phone);
+    cin >> Phone;
     if (Phone.length() != 10) {
         cout << "Not a Valid Phone\n";
         goto hel;
     }
     cout << "Enter your Email:\t";
-    getline(cin, Email);
+    cin >> Email;
     int name_length = Name.length();
     User_ID = Name.substr(0, min(name_length, 4));
     int phone_length = Phone.length();
     User_ID += Phone.substr(phone_length - min(phone_length, 4), min(phone_length, 4));
     cout << "Your User ID is: \t" << User_ID << endl;
     cout << "Enter a password: \t";
-    getline(cin, Passkey);
+    cin >> Passkey;
     for (int i = 0; i < Passkey.length(); ++i) {
         char currentChar = Passkey[i];
         int newAsciiValue = currentChar + 4;
@@ -178,7 +249,7 @@ hel:  cout << "Enter your Phone:\t";
     cout << "Would you like to list property(Y/N):\t";
     cin >> choice;
     if (choice == 'Y' || choice == 'y') {
-        listProperty();
+        listProperty(u);
     }
     else
         searchProperty();
@@ -226,8 +297,7 @@ int main() {
         }
         else if (ch == 'y' || ch == 'Y')
             login();
-        else
-
+        else if(ch == 'n' || ch == 'N')
             signup();
     return 0;
 }
