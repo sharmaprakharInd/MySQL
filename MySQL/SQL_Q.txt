@@ -1,1 +1,15 @@
-
+CREATE TABLE properties (
+	Owner_ID Varchar(9) PRIMARY KEY NOT NULL,
+	Zipcode Varchar(6),
+    b int,
+    br int,
+    size int,
+    price double,
+    lastrev VARCHAR(100),
+    laundary CHAR(2),
+    parking CHAR(2),
+    city VARCHAR(10),
+    area VArchar(10)
+    
+);
+ALTER TABLE properties ADD rented int;
