@@ -146,7 +146,7 @@ void login() {
     cin >> User_ID;
     cout << "Enter your passkey:\t";
     cin >> Passkey;
-    //getline(cin, Passkey);
+    getline(cin, Passkey);
     for (int i = 0; i < Passkey.length(); ++i) { // Encrypt
         char currentChar = Passkey[i];
         int newAsciiValue = currentChar + 4;
@@ -157,7 +157,6 @@ void login() {
 
         Passkey[i] = static_cast<char>(newAsciiValue);
     }
-    //cout << Passkey<<"Hi\n";
     sql::mysql::MySQL_Driver* driver;
     sql::Connection* con;
     sql::Statement* stmt;
@@ -171,10 +170,8 @@ void login() {
     res = stmt->executeQuery("SELECT * FROM users WHERE User_ID='"+User_ID+"'");
     // Iterate over the result set and print the data
     while (res->next()) {
-        //cout << res->getString("Passkey") <<"hi" << Passkey << res->getString("Passkey").compare(Passkey) << endl;
-        if (res->getString("Passkey").compare(Passkey)==0)
+        if (res->getString("Passkey").compare(Passkey))
         {
-            
             Name = res->getString("Name");
             Email= res->getString("Email");
             Phone = res->getString("Phone");
@@ -184,9 +181,8 @@ void login() {
             break;
         }
     }
-    if (logCounter ==0) {
+    if (logCounter < 0) {
         std::cout << "Login failed. Invalid credentials." << std::endl;
-        exit(0);
     }
 
     delete res;
