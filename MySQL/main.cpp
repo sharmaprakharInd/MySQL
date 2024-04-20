@@ -14,7 +14,7 @@ class Users {
     string Name, Phone, Email, User_ID, Passkey;
 public:
     Users(){
-        cout << "Null\n";
+       // cout << "Null\n";
     }
      void setData(string Na, string Ph, string Em, string UID, string PKey){
          Name = Na;
@@ -121,15 +121,20 @@ void listProperty(Users& u) {
     cin >> bath;
     cout << "Enter the price:\t";
     cin >> pr;
+    cin.ignore();
     cout << "Is laundry service available(Y/N)";
     cin >> laun;
+    cin.ignore();
     cout << "Is Parking facility available S(street),G(Garage),N(none)";
     cin >> park;
+    cin.ignore();
     cout << "Enter The city:\t";
-    cin >> ci;
+    getline(cin, ci);
+    cin.ignore();
     cout << "Enter The locality:\t";
-    //cin >> ar;
-    std::getline(std::cin, ar);
+    cin >> ar;
+    cin.ignore();
+    //std::getline(std::cin, ar);
     cout << "Enter The Zipcode:\t";
     getline(cin, Zipc);
     Property P;
@@ -137,10 +142,89 @@ void listProperty(Users& u) {
     intotable("property", P);
 
 }
-void searchProperty(){}
+void searchProperty(Users& u) {
+    sql::mysql::MySQL_Driver* driver;
+    sql::Connection* con;
+    sql::Statement* stmt;
+    sql::ResultSet* res;
+    // Connect to the database
+    driver = sql::mysql::get_mysql_driver_instance();
+    con = driver->connect("localhost", "root", "");
+    con->setSchema("houserental");
+    cout << "Welcome to property search\n";
+    cout << "Welcome user:\t" << u.getData('U');
+    cout << "Enter the area:\t";
+    string ar1; int c;
+    cin >> ar1;
+    // Execute a query to retrieve all data from the 'users' table
+    stmt = con->createStatement();
+    res = stmt->executeQuery("SELECT * FROM properties WHERE area='" + ar1 + "'");
+    cout << "Prop_ID\t Size \t price \t b \t br \t laundary \t parking \t lastrev\n" << endl;
+
+    while (res->next()) {
+        if (res->getString("rented") == "") {
+            cout << res->getInt("Prop_ID") << "\t" << res->getInt("size") << "\t" << res->getDouble("price") << "\t" << res->getInt("b") << "\t" << res->getInt("br") << "\t\t" << res->getString("laundary") << "\t" << res->getString("parking") << "\t" << res->getString("lastrev") << "\t" << endl;
+        }
+    }
+    cout << "Enter the ID of the property which you have to rent:\t";
+    cin >> c;
+
+    MYSQL* conn; conn = mysql_init(NULL);
+    if (!mysql_real_connect(conn, "localhost", "root", "", "houserental", 3306, NULL, 0)) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    else {
+        cout << "logged in Databsse" << endl;
+    }
+    string insert = "UPDATE properties SET rented = 1 WHERE Prop_ID =" + to_string(c);
+    if (mysql_query(conn, insert.c_str())) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    insert = "UPDATE properties SET renter ='"+ u.getData('U') +"' WHERE Prop_ID =" + to_string(c);
+    if (mysql_query(conn, insert.c_str())) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    else {
+        cout << "Data Saved Successfuly!" << endl;
+    }
+    cout << "You have rented this property congatutiolation";
+    cout << "Prop_ID\t Size \t price \t b \t br \t laundary \t parking \t lastrev\n" << endl;
+    while (res->next()) {
+        if (res->getInt("Prop_ID") == c) {
+            cout << res->getInt("Prop_ID") << "\t" << res->getInt("size") << "\t" << res->getDouble("price") << "\t" << res->getInt("b") << "\t" << res->getInt("br") << "\t\t" << res->getString("laundary") << "\t" << res->getString("parking") << "\t" << res->getString("lastrev") << "\t" << endl;
+        }
+    }
+}
+void unrent(int propn) {
+    string rev;
+    cout << "Enter a review:\t";
+    cin >> rev;
+    MYSQL* conn; conn = mysql_init(NULL);
+    if (!mysql_real_connect(conn, "localhost", "root", "", "houserental", 3306, NULL, 0)) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    else {
+        cout << "logged in Databsse" << endl;
+    }
+    string insert = "UPDATE properties SET lastrev ='"+rev+"' WHERE Prop_ID =" + to_string(propn);
+    if (mysql_query(conn, insert.c_str())) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    insert = "UPDATE properties SET rented = NULL WHERE Prop_ID =" + to_string(propn);
+    if (mysql_query(conn, insert.c_str())) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    insert = "UPDATE properties SET renter = NULL WHERE Prop_ID =" + to_string(propn);
+    if (mysql_query(conn, insert.c_str())) {
+        cout << "Error: " << mysql_error(conn) << endl;
+    }
+    else {
+        cout << "Data Saved Successfuly!" << endl;
+    }
+}
 void login() {
     string S_no, Name, Phone, Email, User_ID, Passkey;
-    Users usr;
+    Users usr; char ur; int propn;
     int logCounter = 0;
     cout << "Enter your User_ID:\t";
     cin >> User_ID;
@@ -188,18 +272,40 @@ void login() {
         std::cout << "Login failed. Invalid credentials." << std::endl;
         exit(0);
     }
+   
+    char choice;
+    int c = 0;
+    res = stmt->executeQuery("SELECT * FROM properties WHERE renter='" + User_ID + "'");
+     
+        cout << "You're currently renting the following:\n";
+        cout << "Prop_ID\t Size \t price \t b \t br \t laundary \t parking \t lastrev\n" << endl;
 
+        while (res->next()) {
+            c++;
+            cout << res->getInt("Prop_ID") << "\t" << res->getInt("size") << "\t" << res->getDouble("price") << "\t" << res->getInt("b") << "\t" << res->getInt("br") << "\t\t" << res->getString("laundary") << "\t" << res->getString("parking") << "\t" << res->getString("lastrev") << "\t" << endl;
+        }
+        if (c > 0) {
+            cout << "Would you like to unrent any property:(Y/N)\t";
+            cin >> ur;
+            if (ur == 'Y') {
+                cout << "Enter the property you want to rent:\t";
+                cin >> propn;
+                unrent(propn);
+            }
+        }
+        else {
+            cout << "no propperty found\n";
+        }
     delete res;
     delete stmt;
     delete con;
-    char choice;
     cout << "Would you like to list property(Y/N):\t";
     cin >> choice;
     if (choice == 'Y' || choice == 'y') {
         listProperty(usr);
     }
     else
-        searchProperty();
+        searchProperty(usr);
 }
 void signup() {
     string S_no, Name, Phone, Email, User_ID, Passkey;
@@ -256,7 +362,7 @@ hel:  cout << "Enter your Phone:\t";
         listProperty(u);
     }
     else
-        searchProperty();
+        searchProperty(u);
 }
 void showTables() {
     sql::mysql::MySQL_Driver* driver;
@@ -292,7 +398,7 @@ void showTables() {
 
 int main() {
     cout << "Welcome to Property rental\n";
-        cout << "Are you an existing user(Y/N)\t";
+       home: cout << "Are you an existing user(Y/N)\t";
         char ch;
         cin >> ch;
         if (ch == '0') {
