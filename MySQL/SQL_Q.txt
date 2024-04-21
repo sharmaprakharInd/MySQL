@@ -1,15 +1,24 @@
 CREATE TABLE properties (
-	Owner_ID Varchar(9) PRIMARY KEY NOT NULL,
+	Prop_ID INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+	Owner_ID Varchar(9) ,
+	renter Varchar(9),
 	Zipcode Varchar(6),
-    b int,
-    br int,
-    size int,
-    price double,
-    lastrev VARCHAR(100),
-    laundary CHAR(2),
-    parking CHAR(2),
-    city VARCHAR(10),
-    area VArchar(10)
+   	b int,
+    	br int,
+    	size int,
+    	price double,
+  	lastrev VARCHAR(100),
+ 	laundary CHAR(2),
+  	parking CHAR(2),
+   	city VARCHAR(10),
+  	area VArchar(10),
+	rented int,
     
 );
-ALTER TABLE properties ADD rented int;
+CREATE TABLE employee(
+	Name VARCHAR(20),
+	Phone VARCHAR(10),
+	Email VRACHAR(50),
+	User_ID VARCHAR(9),
+	Passkey VARCHAR(20),
+);
