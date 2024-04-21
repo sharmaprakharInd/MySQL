@@ -8,10 +8,10 @@ CREATE TABLE properties (
     	size int,
     	price double,
   	lastrev VARCHAR(100),
- 	laundary CHAR(2),
-  	parking CHAR(2),
-   	city VARCHAR(10),
-  	area VArchar(10),
+ 	laundary VARCHAR(1),
+  	parking VARCHAR(1),
+   	city VARCHAR(15),
+  	area VArchar(15),
 	rented int,
     
 );
